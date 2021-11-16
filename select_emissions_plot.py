@@ -42,17 +42,18 @@ def plot_EDGAR_monthly(emi, emi_err, emi_monthly, spec):
         
     fig, ax = plt.subplots(1,1, figsize = (9,5))
     fig.suptitle('EDGAR yearly and monthly emissions for ' +par.region_full+' region')
-    ax.errorbar(yrs,emi,emi_err,fmt='.', elinewidth=1, capsize=3, label = 'EDGAR '+spec)
+    #ax.errorbar(yrs,emi/12,emi_err/12,fmt='.', elinewidth=1, capsize=3, label = 'EDGAR '+spec)
     #ax.scatter(anni, emi_ispra, c='C1',label = 'ISPRA '+spec)
     
     months = np.arange(0,1,1/12)
     anno = 2000
     for year_data in emi_monthly:
-        ax.scatter(anno+months, year_data, c='C1', s=2)
+        ax.plot(anno+months, year_data, '-o', c='C1', marker='^', ms=3, lw=1)
         anno = anno+1        
     
     ax.set_xlabel('years')
     ax.set_xlim(2000,)
+    ax.set_xticks(np.arange(1998, 2022,2))
     #ax.set_ylim(0,max(emi+emi_err)*1.05)
     ax.set_ylabel(spec+' total emission [t]')
     ax.grid()

@@ -12,7 +12,7 @@ import select_emissions_fit_eval as fitev
 import select_emissions_param as par
 import select_emissions_plot as plot
 import select_emissions_EDGAR_profiles_sectors as eps
-
+import pandas as pd
 ###############################################################################
 ###   Select emissions inside emission region and write output on files     ###
 ###############################################################################
@@ -39,7 +39,6 @@ if par.IPR:
 ###############################################################################
 ###                               FIT                                       ###
 ###############################################################################
-
 fitev.fit_emis('CO', emi_CO, emi_err_CO, par.start_year_co, par.end_year_co, 2, True)
 fitev.fit_emis('CH4', emi_CH4, emi_err_CH4, par.start_year_ch4, par.end_year_ch4, 4, True)
 fitev.fit_emis('CO', emi_CO, emi_err_CO, 2000, 2015, 3, True)
@@ -71,13 +70,21 @@ plot.plot_2D_emis('CH4', 2015)
 ###############################################################################
 yrs_profile = [x for x in range(2000,2018)]
 
-yearly_emi_CO = list(zip(yrs_profile, emi_CO[2000-par.start_year_co:len(emi_CO)] ))
+yearly_emi_CO_frame = pd.read_csv('predicted_'+par.region+'_CO_yearly_emi.txt', sep=' ',usecols=['year','emi[t]'])
+yearly_emi_CO_frame = yearly_emi_CO_frame[yearly_emi_CO_frame['year']>1999]
+yearly_emi_CO = list(zip(yearly_emi_CO_frame.year, yearly_emi_CO_frame['emi[t]'] ))
+
 monthly_profile_CO = eps.get_monthly_profile( yearly_emi_CO ,'ALL', profile_region=par.profile_region) 
+eps.write_monthly_emissions(par.region, 'CO', monthly_profile_CO)
 plot.plot_EDGAR_monthly(emi_CO, emi_err_CO, monthly_profile_CO, 'CO')
 
 
-yearly_emi_CH4 = list(zip(yrs_profile, emi_CH4[2000-par.start_year_ch4:len(emi_CH4)] ))
+yearly_emi_CH4_frame = pd.read_csv('predicted_'+par.region+'_CH4_yearly_emi.txt', sep=' ',usecols=['year','emi[t]'])
+yearly_emi_CH4_frame = yearly_emi_CH4_frame[yearly_emi_CH4_frame['year']>1999]
+yearly_emi_CH4 = list(zip(yearly_emi_CH4_frame.year, yearly_emi_CH4_frame['emi[t]'] ))
+
 monthly_profile_CH4 = eps.get_monthly_profile( yearly_emi_CH4 ,'ALL', profile_region=par.profile_region) 
+eps.write_monthly_emissions(par.region, 'CH4', monthly_profile_CH4)
 plot.plot_EDGAR_monthly(emi_CH4, emi_err_CH4, monthly_profile_CH4, 'CH4')
 
 
