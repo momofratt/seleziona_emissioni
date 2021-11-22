@@ -1,25 +1,33 @@
 import geopandas as gpd
 import itertools
 import shapely
-import select_emissions_param as par
 import select_emissions_netcdf as net
 #################################################
 ################ USER PARAMETERS ################
 res_folder = './results/'
-
+predicted_res_folder = './res_predicted_emi/'
 # seleziona province. NB: le province selezionate DEVONO essere adiacenti. e.g. [Ferrara, Bologna, Modena] è una buona selezione, [Ferrara, Bologna, Parma] invece NO
 
 # ############## EMILIA ROMAGNA ###############
-region = 'ER' # suffix for ouput files
-region_full = 'Emilia Romagna'
-provinces = ['Modena', 'Reggio Emilia', 'Parma', 'Piacenza', 'Bologna', 'Ferrara', 'Ravenna', 'Forlì-Cesena', 'Rimini']
-IPR=True
+# region = 'ER' # suffix for ouput files
+# region_full = 'Emilia Romagna'
+# prov_numname = [(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia'"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+# IPR=True
 ###############################################
 # ############## TOSCANA ###############
 # region = 'TOS' # suffix for ouput files
 # region_full = 'Toscana'
 # provinces = ['Grosseto', 'Livorno', 'Pisa', 'Massa-Carrara', 'Lucca', 'Pistoia', 'Prato', 'Firenze', 'Arezzo', 'Siena']
 # IPR=True
+###############################################
+# ############## PO' VALLEY ###############
+region = 'PO'
+region_full = "Po' Valley"
+prov_numname = [(1, 'Turin'),(2, 'Vercelli'),(3, 'Novara'),(4, 'Cuneo'),(5, 'Asti'),(6, 'Alessandria'),(96, 'Biella'),(103, 'Verbano-Cusio-Ossola'),(12, 'Varese'),(13, 'Como'),(14, 'Sondrio'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(25, 'Belluno'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+IPR = True
+
+prov_num  = [prov[0] for prov in prov_numname] # province number according to ISPRA dataset
+provinces = [prov[1] for prov in prov_numname] # province name according to admin1 geoframe
 ########################################
 profile_region = 17 # region profile number according to EDGAR dataset (see Crippa et al. 2020)
 
@@ -52,7 +60,7 @@ states_geoframe = gpd.GeoDataFrame.from_file('admin1.geojson')        # read geo
 
 prov_geoframe = gpd.GeoDataFrame()  # select provinces
 
-for prov in par.provinces:
+for prov in provinces:
     new_prov = states_geoframe[states_geoframe['name']==prov] # read line from the GeoDataFrame that correspond to the selected province
     if type(new_prov['geometry'].to_list()[0]) == shapely.geometry.multipolygon.MultiPolygon: # if prov is a multipolygon (e.g. islands) uses only the largest polygon 
         prov_poly = new_prov['geometry'].to_list()    

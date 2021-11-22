@@ -10,6 +10,7 @@ Created on Tue Sep 28 14:41:43 2021
 # province = [('Piacenza',33), ('Parma',34),('Reggio Emilia',35),('Modena',36),('Bologna',37),('Ferrara',38),('Ravenna',39),('Forli',40),('Rimini',99)]
 import pandas as pd    
 import matplotlib.pyplot as plt
+import select_emissions_param as par
 
 def select_specie(in_frame, specie):
     # seleziona dati per la specie selezionata
@@ -32,24 +33,34 @@ def select_regional_data(regioni, macro_settore):
             frame = frame[frame['COD_REGI'] == reg[1]]  # seleziona dati regionali per il macrosettore
             sel_data_frame = sel_data_frame.append(frame) # appende i dati del macrosettore al frame totale
     return sel_data_frame
-    
 
-def select_ISPRA(region):
+
+def select_prov_data(prov_number, macro_settore):
+    # seleziona dati riferiti alle province di interesse
+    sel_data_frame = pd.DataFrame()
+    for prov in prov_number:
+        if type(macro_settore)==int:
+            macro_settore = [macro_settore]
+        for sett in macro_settore: 
+            if sett<10: # definisce il prefisso del file realativo al macrosettore
+                prefix = 'sect_0'
+            else:
+                prefix = 'sect_'
+            frame = pd.read_csv( './data_ISPRA/'+prefix+str(sett)+'.csv', sep = ' ')    # legge frame del macrosettore    
+            frame = frame[frame['COD_PROV'] == prov]  # seleziona dati regionali per il macrosettore
+            sel_data_frame = sel_data_frame.append(frame) # appende i dati del macrosettore al frame totale
+    return sel_data_frame
+        
+
+def select_ISPRA(prov_num):
     # returns ISPRA total emissions for CO and CH4 in Emilia Romagna 
-    # i dati devono essere suddivisi in files diferenti. Ogni contiene i dati relativi ad un macrosettore
+    # i dati devono essere suddivisi in files diferenti. Ogni file contiene i dati relativi ad un macrosettore
     # I vari macrosettori sono riportati nei dati disaggregati ISPRA ( http://www.sinanet.isprambiente.it/it/sia-ispra/inventaria/disaggregazione-dellinventario-nazionale-2015/view )
-    if region == 'ER':
-        region_nm = 'Emilia Romagna'
-        region_id = 8
-    elif region == 'TOS':
-        region_nm = 'Toscana'
-        region_id = 9
     
     macro_settore = [1,2,3,4,5,6,7,8,9,10,11]
-    regioni = [(region_nm, region_id)]  # ad ogni regione è associato un numero identificativo- Per selezionare altre regioni bisogna indicare il rispettivo numero
     anni = [1990, 1995, 2000, 2005, 2010, 2015]
         
-    regional_frame = select_regional_data(regioni, macro_settore)
+    regional_frame = select_prov_data(prov_num, macro_settore)
     
     regional_ch4_frame = select_specie(regional_frame, '004')
     regional_co_frame = select_specie(regional_frame, '005')
