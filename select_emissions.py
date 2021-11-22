@@ -21,6 +21,9 @@ import pandas as pd
 emi_CH4, emi_err_CH4 = fitev.eval_emission('CH4')
 emi_CO, emi_err_CO = fitev.eval_emission('CO')
 
+emi_err_CH4 = plot.eval_max_emi_error(emi_CH4, emi_err_CH4) # set the error equal to the max between the 10% of the emission (EDGAR default????) and the error estimated from boundary selection
+emi_err_CO  = plot.eval_max_emi_error(emi_CO, emi_err_CO)
+
 if par.IPR:
     print('read ISPRA')
     # get ISPRA emissions and write on file
@@ -67,7 +70,7 @@ if par.IPR:
 
 print('plot predicted')
 plot.plot_predicted(emi_CO, emi_err_CO, emi_CO_ISPRA,'CO')
-plot.plot_predicted(emi_CH4, emi_err_CH4, emi_CO_ISPRA,'CH4')
+plot.plot_predicted(emi_CH4, emi_err_CH4, emi_CH4_ISPRA,'CH4')
 
 print('Plot 2D')
 plot.plot_2D_emis('CH4', 2015, False)

@@ -11,6 +11,7 @@ Created on Tue Sep 28 14:41:43 2021
 import pandas as pd    
 import matplotlib.pyplot as plt
 import select_emissions_param as par
+import numpy as np 
 
 def select_specie(in_frame, specie):
     # seleziona dati per la specie selezionata
@@ -99,54 +100,105 @@ def plot_regional_sources():
         settori_TOS_CH4.append(ch4_frame_TOS[anno].sum())
         settori_TOS_CO.append(  co_frame_TOS[anno].sum())
     
-    fig, ax = plt.subplots(2,2, figsize = (8,8))
-    fig.suptitle('Sector contribution to CO and CH$_4$ emissions for TOS and ER during '+anno+'\nfrom ISPRA database', x=0.63)
+    # fig, ax = plt.subplots(2,2, figsize = (8,8))
+    # fig.suptitle('Sector contribution to CO and CH$_4$ emissions for TOS and ER during '+anno+'\nfrom ISPRA database', x=0.63)
     
-    ax[0][0].pie(settori_ER_CH4)
-    ax[0][0].set_title('ER CH$_4$')
+    # ax[0][0].pie(settori_ER_CH4)
+    # ax[0][0].set_title('ER CH$_4$')
     
-    ax[0][1].pie(settori_ER_CO)
-    ax[0][1].set_title('ER CO')
+    # ax[0][1].pie(settori_ER_CO)
+    # ax[0][1].set_title('ER CO')
     
-    ax[1][0].pie(settori_TOS_CH4)
-    ax[1][0].set_title('TOS CH$_4$')
+    # ax[1][0].pie(settori_TOS_CH4)
+    # ax[1][0].set_title('TOS CH$_4$')
 
     labels =  ['Combustione nell industria e impianti energetici',
-               'Impianti di combustione non industriale',
-               'Processi produttivi (combustione nell industria manufatturiera)',
-               'Processi produttivi (combustione senza contatto)',
-               'Estrazione e distribuzione di combustibili fossili ed energia geotermica',
-               'Uso di solventi ed altri prodotti',
-               'Trasporti stradali',
-               'Altre sorgenti mobili e macchinari mobili (trasporti fuori strada)',
-               'Trattamento dei rifiuti e discariche',
-               'Agricoltura',
-               'Altre emissioni ed assorbimenti']
+                'Impianti di combustione non industriale',
+                'Processi produttivi (combustione nell industria manufatturiera)',
+                'Processi produttivi (combustione senza contatto)',
+                'Estrazione e distribuzione di combustibili fossili ed energia geotermica',
+                'Uso di solventi ed altri prodotti',
+                'Trasporti stradali',
+                'Altre sorgenti mobili e macchinari mobili (trasporti fuori strada)',
+                'Trattamento dei rifiuti e discariche',
+                'Agricoltura',
+                'Altre emissioni ed assorbimenti']
     
-    ax[1][1].pie(settori_TOS_CO, labels=labels, labeldistance=None)
-    ax[1][1].set_title('TOS CO')
-    plt.subplots_adjust(bottom=0.3, right=0.94, left= 0.3, top=0.9)
-    fig.legend(loc='lower right')
+    # ax[1][1].pie(settori_TOS_CO, labels=labels, labeldistance=None)
+    # ax[1][1].set_title('TOS CO')
+    # plt.subplots_adjust(bottom=0.3, right=0.94, left= 0.3, top=0.9)
+    # fig.legend(loc='lower right')
 
-    plt.savefig('./results/pie_chart_sectors_ER_TOS.pdf', format ='pdf', bbox_inches="tight")
+    # plt.savefig('./results/pie_chart_sectors_ER_TOS.pdf', format ='pdf', bbox_inches="tight")
+    
+    fig1, ax1 = plt.subplots(1,2, figsize = (8,8))
+    fig1.suptitle('Sector contribution to CO and CH$_4$ emissions for TOS and ER during '+anno+'\nfrom ISPRA database')
+
+    ch4_list = [settori_ER_CH4, settori_TOS_CH4]
+    co_list =  [settori_ER_CO, settori_TOS_CO] 
+    
+    plot_bar_sector(ax1[0],ch4_list,labels, 'CH$_4$')
+    plot_bar_sector(ax1[1],co_list,labels,'CO' )
+    fig1.savefig('bar_plot_sector.pdf', forma = 'pdf')
     
     
     
+def plot_bar_sector(ax, data, columns, title):
+        
+    rows =['Emilia Romagna', 'Toscana']    
+    
+    # Get some pastel shades for the colors
+    colors = plt.cm.BuPu(np.linspace(0, 0.5, len(rows)))
+    n_rows = len(data)
+    
+    index = np.arange(len(columns)) + 0.3
+    bar_width = 0.4
+    
+    # Initialize the vertical-offset for the stacked bar chart.
     
     
+    # Plot bars and create text labels for the table
+    for i in range(len(index)-1):
+        y_offset = np.zeros(1)
+        for row in range(n_rows):
+            ax.bar(index[i], data[row][i], bar_width, bottom=y_offset, color='C'+str(i), alpha = (1/(row+1)))
+            y_offset = y_offset + data[row][i]
+    i = len(index)-1
+    y_offset = np.zeros(1)
+    for row in range(n_rows): #add legend
+        ax.bar(index[i], data[row][i], bar_width, bottom=y_offset, color='C'+str(i), alpha = (1/(row+1)), label = rows[row])
+        y_offset = y_offset + data[row][i]
+   
+    # loop for table
+    cell_text = []
+    y_offset = np.zeros(len(columns))
+    for row in range(n_rows):
+        y_offset = y_offset + data[row][i]
+        cell_text.append(['%1.1f' % (x / 1000.0) for x in y_offset])
     
+    # Reverse colors and text labels to display the last value at the top.
+    colors = colors[::-1]
+    cell_text.reverse()
     
+    # Add a table at the bottom of the axes
+    # the_table = ax.table(cellText=cell_text,
+    #                       rowLabels=rows,
+    #                       rowColours=colors,
+    #                       colLabels=columns,
+    #                       loc='bottom')
     
+    # Adjust layout to make room for the table:
+    #ax.subplots_adjust(left=0.2, bottom=0.2)
     
+    #plt.ylabel("Loss in ${0}'s".format(value_increment))
+    #plt.yticks(values * value_increment, ['%d' % val for val in values])
+    #ax.xticks([])
+    ax.set_title(title)
+    ax.legend()
+    ax.grid()
     
-    
-    
-    
-    
-    
-    
-    
-    
+plot_regional_sources()    
+
     
     
     

@@ -21,9 +21,10 @@ predicted_res_folder = './res_predicted_emi/'
 # IPR=True
 ###############################################
 # ############## PO' VALLEY ###############
+# altre province: (1, 'Turin'),(4, 'Cuneo')(2, 'Vercelli'),(96, 'Biella'),(5, 'Asti'),(25, 'Belluno'),(6, 'Alessandria'),
 region = 'PO'
 region_full = "Po' Valley"
-prov_numname = [(1, 'Turin'),(2, 'Vercelli'),(3, 'Novara'),(4, 'Cuneo'),(5, 'Asti'),(6, 'Alessandria'),(96, 'Biella'),(103, 'Verbano-Cusio-Ossola'),(12, 'Varese'),(13, 'Como'),(14, 'Sondrio'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(25, 'Belluno'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
 IPR = True
 
 prov_num  = [prov[0] for prov in prov_numname] # province number according to ISPRA dataset
