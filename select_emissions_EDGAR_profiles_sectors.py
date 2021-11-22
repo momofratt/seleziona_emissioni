@@ -8,6 +8,7 @@ Created on Fri Nov 12 11:22:41 2021
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt 
+import select_emissions_param as par
 
 def get_region_df(profile_region):
     """
@@ -73,8 +74,8 @@ def get_monthly_profile(yearly_emi, sectors, profile_region):
             yearly_profile = yearly_profile + get_sector_profile(yr_emi[0], sec, region_frame)
         norm = np.sum(yearly_profile)
         yearly_profile = yearly_profile/norm
-        plt.scatter(np.arange(1,13,1), yearly_profile, s =2, label = str(yr_emi[0]))
-        plt.legend()
+        # plt.scatter(np.arange(1,13,1), yearly_profile, s =2, label = str(yr_emi[0]))
+        # plt.legend()
         yearly_profile = yearly_profile * yr_emi[1]
         all_time_profile.append(yearly_profile)
         
@@ -83,7 +84,7 @@ def get_monthly_profile(yearly_emi, sectors, profile_region):
 def write_monthly_emissions(region, spec, monthly_profile):
   
     month_str=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August','September','October','November','December']
-    out_file = open('predicted_'+region+'_'+spec+'_monthly_emi.txt','w')
+    out_file = open(par.predicted_res_folder+'predicted_'+region+'_'+spec+'_monthly_emi.txt','w')
     out_file.write('year month emi[t]\n')
     for year in range(21):
         for month in range(12):

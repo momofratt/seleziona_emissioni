@@ -15,7 +15,8 @@ from shapely.geometry import Point
 import numpy as np
 import select_emissions_param as par
 import select_emissions_netcdf as net
-
+import sys
+          
 def plot_ISPRA_EDGAR(emi, emi_err, emi_ispra, spec, anni):
     if spec == 'CO':
         yrs = np.arange(par.start_year_co, par.end_year_co+1, 1)
@@ -37,24 +38,34 @@ def plot_ISPRA_EDGAR(emi, emi_err, emi_ispra, spec, anni):
 def plot_EDGAR_monthly(emi, emi_err, emi_monthly, spec):
     if spec == 'CO':
         yrs = np.arange(par.start_year_co, par.end_year_co+1, 1)
+        end_year = par.end_year_co
     elif spec == 'CH4':
         yrs = np.arange(par.start_year_ch4, par.end_year_ch4+1, 1)
+        end_year = par.end_year_ch4
+  
         
+    predicted_emi_frame = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_yearly_emi.txt', sep =' ')    
+    predicted_emi_frame = predicted_emi_frame[predicted_emi_frame['year']>end_year]
+    
     fig, ax = plt.subplots(1,1, figsize = (9,5))
-    fig.suptitle('EDGAR yearly and monthly emissions for ' +par.region_full+' region')
-    #ax.errorbar(yrs,emi/12,emi_err/12,fmt='.', elinewidth=1, capsize=3, label = 'EDGAR '+spec)
+    fig.suptitle('EDGAR monthly emissions for ' +par.region_full+' region')
+    ax.errorbar(yrs,emi/12,emi_err/12,fmt='.', elinewidth=1, capsize=3, label = 'EDGAR '+spec+ ' monthly average')
+    ax.errorbar(predicted_emi_frame['year'],predicted_emi_frame['emi[t]']/12,predicted_emi_frame['emi_err[t]']/12,fmt='.', elinewidth=1, capsize=3, label = 'EDGAR '+spec+ ' predicted monthly average', c='purple')
     #ax.scatter(anni, emi_ispra, c='C1',label = 'ISPRA '+spec)
     
     months = np.arange(0,1,1/12)
     anno = 2000
-    for year_data in emi_monthly:
+    for year_data in emi_monthly[0:len(emi_monthly)-1]:
         ax.plot(anno+months, year_data, '-o', c='C1', marker='^', ms=3, lw=1)
-        anno = anno+1        
+        anno = anno+1    
+
+    ax.plot(anno+months, emi_monthly[len(emi_monthly)-1], '-o', c='C1', marker='^', ms=3, lw=1, label = 'EDGAR '+spec+' monthly profile')
+
     
     ax.set_xlabel('years')
     ax.set_xlim(2000,)
     ax.set_xticks(np.arange(1998, 2022,2))
-    #ax.set_ylim(0,max(emi+emi_err)*1.05)
+    ax.set_ylim(bottom=0)
     ax.set_ylabel(spec+' total emission [t]')
     ax.grid()
     ax.legend()
@@ -71,9 +82,9 @@ def plot_predicted(emi, emi_err, emi_ISPRA, spec):
         end_year = par.end_year_ch4
     
     yrs_ISPRA = np.arange(1990,2020,5)
-    predicted_values = pd.read_csv('predicted_'+par.region+'_'+spec+'_emi.txt', sep = ' ')
-    predicted_values_ISPRA = pd.read_csv('predicted_'+par.region+'_ISPRA_'+spec+'_emi.txt', sep = ' ')
-    predicted_emi_file = open('predicted_'+par.region+'_'+spec+'_yearly_emi.txt', 'w')
+    predicted_values = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_emi.txt', sep = ' ')
+    predicted_values_ISPRA = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_ISPRA_'+spec+'_emi.txt', sep = ' ')
+    predicted_emi_file = open(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_yearly_emi.txt', 'w')
     predicted_emi_file.write('year emi[t] emi_err[t]\n')
     for i in range(len(emi)):
         predicted_emi_file.write(str(yrs[i]) +' '+ str(round(emi[i])) +' '+ str(round(emi_err[i])) +'\n')
@@ -101,7 +112,7 @@ def plot_predicted(emi, emi_err, emi_ISPRA, spec):
     ax.legend(loc='best')
     fig.savefig(par.res_folder+'EDGAR_predicted_'+par.region+'_'+spec+'.pdf', format = 'pdf')
 
-def plot_2D_emis(spec, year): 
+def plot_2D_emis(spec, year,plot_included_bins): 
     # plot 2d emission and selected area for a given specie in a giver year
     dlat = 0.5 + abs((max(par.max_lat,par.min_lat)-par.lat_ref))
     dlon =   1 + abs((max(par.max_lon,par.min_lon)-par.lon_ref))
@@ -147,25 +158,26 @@ def plot_2D_emis(spec, year):
     ax1.plot(border_lons,border_lats, transform=data_transf,color='m', lw = .5)
     
     # Add cities
-    ax1.plot(par.lon_ref, par.lat_ref,transform=data_transf, marker='^',color='red', label='reference coordinates', markersize=3)
-    #ax.plot(lon_bolo, lat_bolo,transform=data_transf, marker='x',color='orange', label='Bologna', markersize=3)
+    ax1.plot(par.lon_ref, par.lat_ref,transform=data_transf, marker='x',color='red', label='reference coordinates', markersize=3)
+    ax1.plot(par.lon_CMN, par.lat_CMN,transform=data_transf, marker='^',color='red', label='Mt. Cimone', markersize=3.5)
     
-    for j in range(0, par.nbin): 
-            for i in range(0, par.nbin):  
-                  lat_ind = par.j_ref - par.nbin_2 + j
-                  lon_ind = par.i_ref - par.nbin_2 + i
-                  point_coords = net.index_to_lat( lat_ind, lon_ind)
-                  point = Point(point_coords[1], point_coords[0])
-                
-                  if point.within(par.regione):
-                      ax1.plot(point_coords[1], point_coords[0], transform=data_transf, marker='o', color='y', markersize=2)
-                  
-                  if net.within_internal_boundary(point, par.regione):
-                      ax1.plot(point_coords[1], point_coords[0], transform=data_transf, marker='x', color='g', markersize=2)
-                  
-                  if net.within_external_boundary(point, par.regione):
-                      ax1.plot(point_coords[1], point_coords[0], transform=data_transf, marker='x', color='g', markersize=1)
-                   
+    if plot_included_bins == True:
+        for j in range(0, par.nbin): 
+                for i in range(0, par.nbin):  
+                      lat_ind = par.j_ref - par.nbin_2 + j
+                      lon_ind = par.i_ref - par.nbin_2 + i
+                      point_coords = net.index_to_lat( lat_ind, lon_ind)
+                      point = Point(point_coords[1], point_coords[0])
+                    
+                      if point.within(par.regione):
+                          ax1.plot(point_coords[1], point_coords[0], transform=data_transf, marker='o', color='y', markersize=2)
+                      
+                      if net.within_internal_boundary(point, par.regione):
+                          ax1.plot(point_coords[1], point_coords[0], transform=data_transf, marker='x', color='g', markersize=2)
+                      
+                      if net.within_external_boundary(point, par.regione):
+                          ax1.plot(point_coords[1], point_coords[0], transform=data_transf, marker='x', color='g', markersize=1)
+                       
                       
     # Add coastlines and rivers
     ax1.add_feature(cfeature.COASTLINE)

@@ -22,8 +22,9 @@ emi_CH4, emi_err_CH4 = fitev.eval_emission('CH4')
 emi_CO, emi_err_CO = fitev.eval_emission('CO')
 
 if par.IPR:
+    print('read ISPRA')
     # get ISPRA emissions and write on file
-    emi_CO_ISPRA, emi_CH4_ISPRA, anni = read_ISPRA.select_ISPRA(par.region)
+    emi_CO_ISPRA, emi_CH4_ISPRA, anni = read_ISPRA.select_ISPRA(par.prov_num)
     
     file_emi_ch4_ISPRA = open('./res_files/total_emissions_'+par.region+'_CH4_ISPRA.txt', 'w')
     file_emi_ch4_ISPRA.write('year tot_emi[t]\n')
@@ -39,14 +40,16 @@ if par.IPR:
 ###############################################################################
 ###                               FIT                                       ###
 ###############################################################################
+print('fit emission')
 fitev.fit_emis('CO', emi_CO, emi_err_CO, par.start_year_co, par.end_year_co, 2, True)
 fitev.fit_emis('CH4', emi_CH4, emi_err_CH4, par.start_year_ch4, par.end_year_ch4, 4, True)
 fitev.fit_emis('CO', emi_CO, emi_err_CO, 2000, 2015, 3, True)
 
-
+print('eval predicted')
 fitev.eval_predicted_values(emi_CO, emi_err_CO, 'CO')
 fitev.eval_predicted_values(emi_CH4,emi_err_CH4, 'CH4')
 
+print('eval predicted ISPRA')
 if par.IPR:
     fitev.fit_emis_ISPRA('CO', emi_CO_ISPRA,  1990, 2015, 2, True)
     fitev.eval_predicted_values_ISPRA(emi_CO_ISPRA, par.region, 'CO')
@@ -56,21 +59,27 @@ if par.IPR:
 ###############################################################################
 ###                               PLOT                                      ###
 ###############################################################################
+
 if par.IPR:
+    print('plot ISPRA EDGAR')
     plot.plot_ISPRA_EDGAR(emi_CO, emi_err_CO, emi_CO_ISPRA, 'CO', anni)
     plot.plot_ISPRA_EDGAR(emi_CH4, emi_err_CH4, emi_CH4_ISPRA, 'CH4', anni)    
 
+print('plot predicted')
 plot.plot_predicted(emi_CO, emi_err_CO, emi_CO_ISPRA,'CO')
 plot.plot_predicted(emi_CH4, emi_err_CH4, emi_CO_ISPRA,'CH4')
-plot.plot_2D_emis('CH4', 2015)
+
+print('Plot 2D')
+plot.plot_2D_emis('CH4', 2015, False)
 
 
 ###############################################################################
 ###                           MONTHLY PROFILES                              ###
 ###############################################################################
+print('plot monthly')
 yrs_profile = [x for x in range(2000,2018)]
 
-yearly_emi_CO_frame = pd.read_csv('predicted_'+par.region+'_CO_yearly_emi.txt', sep=' ',usecols=['year','emi[t]'])
+yearly_emi_CO_frame = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_CO_yearly_emi.txt', sep=' ',usecols=['year','emi[t]'])
 yearly_emi_CO_frame = yearly_emi_CO_frame[yearly_emi_CO_frame['year']>1999]
 yearly_emi_CO = list(zip(yearly_emi_CO_frame.year, yearly_emi_CO_frame['emi[t]'] ))
 
@@ -79,7 +88,7 @@ eps.write_monthly_emissions(par.region, 'CO', monthly_profile_CO)
 plot.plot_EDGAR_monthly(emi_CO, emi_err_CO, monthly_profile_CO, 'CO')
 
 
-yearly_emi_CH4_frame = pd.read_csv('predicted_'+par.region+'_CH4_yearly_emi.txt', sep=' ',usecols=['year','emi[t]'])
+yearly_emi_CH4_frame = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_CH4_yearly_emi.txt', sep=' ',usecols=['year','emi[t]'])
 yearly_emi_CH4_frame = yearly_emi_CH4_frame[yearly_emi_CH4_frame['year']>1999]
 yearly_emi_CH4 = list(zip(yearly_emi_CH4_frame.year, yearly_emi_CH4_frame['emi[t]'] ))
 

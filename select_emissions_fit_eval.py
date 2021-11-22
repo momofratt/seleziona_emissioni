@@ -173,7 +173,7 @@ def eval_predicted_values(emi, emi_err, spec):
     elif spec == 'CH4':
         end_year = par.end_year_ch4
         
-    predicted_emi_file = open('predicted_'+par.region+ '_' +spec+'_emi.txt', 'w')
+    predicted_emi_file = open(par.predicted_res_folder+'predicted_'+par.region+ '_' +spec+'_emi.txt', 'w')
     predicted_emi_file.write('start_year fit_order r2')
     for year in range(end_year, 2021): # add one col for each predicted year
         predicted_emi_file.write(' '+str(year))
@@ -265,7 +265,7 @@ def eval_predicted_values_ISPRA(emi, region, spec):
     """
 
     end_year = 2015        
-    predicted_emi_file = open('predicted_'+region+'_ISPRA_'+spec+'_emi.txt', 'w')
+    predicted_emi_file = open(par.predicted_res_folder+'predicted_'+region+'_ISPRA_'+spec+'_emi.txt', 'w')
     predicted_emi_file.write('start_year fit_order r2')
     for year in range(end_year, 2021): # add one col for each predicted year
         predicted_emi_file.write(' '+str(year))
