@@ -136,10 +136,10 @@ def fit_emis(spec, emi, emi_err, start_year, end_year, fit_order, plot):
         ########################################################################
         #### plot predicted points and their values
         missing_points_str = ''
-        for i in range(1,2020-end_year+1):
+        for i in range(1,par.end_year-end_year+1):
             ax2.scatter(end_year+i, poly(end_year-start_year+i), c='r')
             missing_points_str = missing_points_str + str(end_year+i) + ' = ' + str(round(poly(end_year-start_year+i))) +' t'
-            if i < 2020-end_year:
+            if i < par.end_year-end_year:
                 missing_points_str=missing_points_str+'\n'
         ax2.text(0.8, 0.7, missing_points_str, transform=ax2.transAxes, bbox=props)
         ########################################################################
@@ -148,7 +148,7 @@ def fit_emis(spec, emi, emi_err, start_year, end_year, fit_order, plot):
         ax2.set_xlabel('years')
         ax2.set_ylabel(spec+' total emission [t]')
         fig2.savefig(par.res_folder+'EDGAR_'+par.region+'_'+spec+'_'+str(start_year)+'_'+str(fit_order)+'order_polyfit.pdf', format = 'pdf')
-        plt.show()
+        plt.close(fig2)
 
     return poly, r2
 
@@ -175,7 +175,7 @@ def eval_predicted_values(emi, emi_err, spec):
         
     predicted_emi_file = open(par.predicted_res_folder+'predicted_'+par.region+ '_' +spec+'_emi.txt', 'w')
     predicted_emi_file.write('start_year fit_order r2')
-    for year in range(end_year, 2021): # add one col for each predicted year
+    for year in range(end_year, par.end_year+1): # add one col for each predicted year
         predicted_emi_file.write(' '+str(year))
     predicted_emi_file.write('\n')
     for start_year in range(1990, end_year-5):
@@ -187,9 +187,9 @@ def eval_predicted_values(emi, emi_err, spec):
             
             if (variation_2020 < variation_2010) and (poly(end_year-start_year+5) < poly(end_year-start_year-5)):            
                 predicted_emi_file.write(str(start_year)+' '+str(fit_order) + ' ' + str(round(r2,3))+ ' ')
-                for year in range(end_year, 2020):
+                for year in range(end_year, par.end_year+1):
                     predicted_emi_file.write(str(round(poly(year-start_year))) + ' ')
-                predicted_emi_file.write(str(round(poly(2020-start_year)))+'\n')
+                predicted_emi_file.write(str(round(poly(par.end_year-start_year)))+'\n')
     predicted_emi_file.close()
     
 
@@ -217,7 +217,7 @@ def fit_emis_ISPRA(spec, emi, start_year, end_year, fit_order, plot):
         ax2.grid(True, zorder=0)
         ax2.scatter(yrs+start_year,emi)
         ax2.plot(xyears+start_year, poly(xyears), c='C1')
-            
+
         #### define string with fit results as a function of the fit order  ####
         f_string = 'f(x) = '   
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.7)
@@ -227,27 +227,28 @@ def fit_emis_ISPRA(spec, emi, start_year, end_year, fit_order, plot):
         for i in range(len(fit_res)):
             f_string = f_string + ' a$_'+str(i)+'$='+str(round(fit_res[i],2))+'\n'
         f_string = f_string + '$r^2$ = ' + str(round(r2,3))
-            
+
         ax2.text(0.03, 0.05, f_string, transform=ax2.transAxes, bbox=props) 
         ########################################################################
         #### plot predicted points and their values
         missing_points_str = ''
-        for i in range(1,2020-end_year+1):
+        for i in range(1,par.end_year-end_year+1):
             ax2.scatter(end_year+i, poly(end_year-start_year+i), c='r')
             missing_points_str = missing_points_str + str(end_year+i) + ' = ' + str(round(poly(end_year-start_year+i))) +' t'
-            if i < 2020-end_year:
+            if i < par.end_year-end_year:
                 missing_points_str=missing_points_str+'\n'
         ax2.text(0.8, 0.7, missing_points_str, transform=ax2.transAxes, bbox=props)
         ########################################################################
-        
+
         ax2.set_ylim(0,max(emi)*1.15)
         ax2.set_xlabel('years')
         ax2.set_ylabel(spec+' total emission [t]')
         fig2.savefig(par.res_folder+par.region+'_ISPRA_'+spec+'_'+str(start_year)+'_'+str(fit_order)+'order_polyfit.pdf', format = 'pdf')
-        plt.show()
+        plt.close(fig2)
+
     return poly, r2
 
-    
+
 def eval_predicted_values_ISPRA(emi, region, spec):
     """ 
     Evaluates the predicted values according to past values. The predicted values are obtained by multiple polynomial fits performed on the available data.
@@ -267,7 +268,7 @@ def eval_predicted_values_ISPRA(emi, region, spec):
     end_year = 2015        
     predicted_emi_file = open(par.predicted_res_folder+'predicted_'+region+'_ISPRA_'+spec+'_emi.txt', 'w')
     predicted_emi_file.write('start_year fit_order r2')
-    for year in range(end_year, 2021): # add one col for each predicted year
+    for year in range(end_year, par.end_year+1): # add one col for each predicted year
         predicted_emi_file.write(' '+str(year))
     predicted_emi_file.write('\n')
     for start_year in range(1990, 2005, 5):
@@ -279,8 +280,8 @@ def eval_predicted_values_ISPRA(emi, region, spec):
             
             if (variation_2020 < variation_2005) and (poly(end_year-start_year+5) < poly(end_year-start_year-5)):            
                 predicted_emi_file.write(str(start_year)+' '+str(fit_order) + ' ' + str(round(r2,3))+ ' ')
-                for year in range(end_year, 2020):
+                for year in range(end_year, par.end_year+1):
                     predicted_emi_file.write(str(round(poly(year-start_year))) + ' ')
-                predicted_emi_file.write(str(round(poly(2020-start_year)))+'\n')
+                predicted_emi_file.write(str(round(poly(par.end_year-start_year)))+'\n')
     predicted_emi_file.close()
    

@@ -2,30 +2,74 @@ import geopandas as gpd
 import itertools
 import shapely
 import select_emissions_netcdf as net
+import pandas as pd
 #################################################
 ################ USER PARAMETERS ################
 res_folder = './results/'
 predicted_res_folder = './res_predicted_emi/'
+
+lon_CMN, lat_CMN   = 10.70111, 44.19433 # CMN coordinates 
+lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
+
 # seleziona province. NB: le province selezionate DEVONO essere adiacenti. e.g. [Ferrara, Bologna, Modena] è una buona selezione, [Ferrara, Bologna, Parma] invece NO
 
 # ############## EMILIA ROMAGNA ###############
 # region = 'ER' # suffix for ouput files
 # region_full = 'Emilia Romagna'
 # prov_numname = [(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia'"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+#lat_stat, lon_stat = lat_CMN, lon_CMN
+#stat_nm = 'Mt. Cimone'
 # IPR=True
 ###############################################
 # ############## TOSCANA ###############
 # region = 'TOS' # suffix for ouput files
 # region_full = 'Toscana'
 # provinces = ['Grosseto', 'Livorno', 'Pisa', 'Massa-Carrara', 'Lucca', 'Pistoia', 'Prato', 'Firenze', 'Arezzo', 'Siena']
+#lat_stat, lon_stat = lat_CMN, lon_CMN
+#stat_nm = 'Mt. Cimone'
 # IPR=True
 ###############################################
 # ############## PO' VALLEY ###############
+#altre province: (1, 'Turin'),(4, 'Cuneo')(2, 'Vercelli'),(96, 'Biella'),(5, 'Asti'),(25, 'Belluno'),(6, 'Alessandria'),
+#region = 'PO'
+#region_full = "Po' Valley"
+#prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+#lat_stat, lon_stat = lat_CMN, lon_CMN
+#stat_nm = 'Mt. Cimone'
+#IPR = True
+###############################################
+###############################################
+# ############## PO' VALLEY EST ###############
+#altre province: (1, 'Turin'),(4, 'Cuneo')(2, 'Vercelli'),(96, 'Biella'),(5, 'Asti'),(25, 'Belluno'),(6, 'Alessandria'),
+# region = 'PO-east'
+# region_full = "Po' Valley EAST"
+# prov_numname = [(17, 'Brescia'),(20, 'Mantova'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(25, 'Belluno'),(22,'Trento'),(21,'Bozen'),(25,'Belluno'),(93,'Pordenone'), (30,'Udine')]
+# lat_stat, lon_stat = lat_CMN, lon_CMN
+# stat_nm = 'Mt. Cimone'
+# IPR = True
+###############################################
+###############################################
+# ############## BAVARIA ###############
 # altre province: (1, 'Turin'),(4, 'Cuneo')(2, 'Vercelli'),(96, 'Biella'),(5, 'Asti'),(25, 'Belluno'),(6, 'Alessandria'),
-region = 'PO'
-region_full = "Po' Valley"
-prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
-IPR = True
+# region = 'GER'
+# region_full = "Bayern-Baden-Württemberg"
+# #prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+# prov_numname=[(0,'Bayern'),(0,'Baden-Württemberg')]
+# lat_stat, lon_stat = 47.8011, 11.0246 
+# stat_nm = 'Hohenpeissenberg'
+# IPR = False
+# ###############################################
+# ###############################################
+# # ############## Puy de dome ###############
+# altre province: (1, 'Turin'),(4, 'Cuneo')(2, 'Vercelli'),(96, 'Biella'),(5, 'Asti'),(25, 'Belluno'),(6, 'Alessandria'),
+region = 'PUY'
+region_full = "Rhone-Auvergne"
+#prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+prov_numname=[(0,'Puy-de-Dôme'),(0,'Creuse'),(0,'Corrèze'),(0,'Rhône'),(0,'Loire')]
+lat_stat, lon_stat = 45.7719, 2.9658 
+stat_nm = 'Puy-de-Dôme'
+IPR = False
+###############################################
 
 prov_num  = [prov[0] for prov in prov_numname] # province number according to ISPRA dataset
 provinces = [prov[1] for prov in prov_numname] # province name according to admin1 geoframe
@@ -36,10 +80,7 @@ start_year_ch4 = 1990
 end_year_ch4   = 2018
 start_year_co  = 1990
 end_year_co    = 2015
-
-
-lon_CMN, lat_CMN   = 10.70111, 44.19433 # CMN coordinates 
-lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
+end_year = 2021 #last year for emission prediction
 #################################################
 #################################################
 
@@ -68,7 +109,8 @@ for prov in provinces:
         max_prov_poly = max(prov_poly[0], key=lambda a: a.area)
         new_prov['geometry'] = max_prov_poly
     
-    prov_geoframe = prov_geoframe.append(new_prov, ignore_index=True)
+    # prov_geoframe = prov_geoframe.append(new_prov, ignore_index=True)
+    prov_geoframe = pd.concat([prov_geoframe, new_prov],ignore_index=True)
 
 # union of provinces and evaluation of external boundaries
 geoms = prov_geoframe['geometry'].tolist()

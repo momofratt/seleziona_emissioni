@@ -65,15 +65,24 @@ if par.IPR:
 
 if par.IPR:
     print('plot ISPRA EDGAR')
-    plot.plot_ISPRA_EDGAR(emi_CO, emi_err_CO, emi_CO_ISPRA, 'CO', anni)
-    plot.plot_ISPRA_EDGAR(emi_CH4, emi_err_CH4, emi_CH4_ISPRA, 'CH4', anni)    
+    plot.plot_ISPRA_EDGAR(emi_CO, emi_err_CO, 'CO', anni,  emi_ispra=emi_CO_ISPRA)
+    plot.plot_ISPRA_EDGAR(emi_CH4, emi_err_CH4, 'CH4', anni, emi_ispra=emi_CH4_ISPRA )    
 
-print('plot predicted')
-plot.plot_predicted(emi_CO, emi_err_CO, emi_CO_ISPRA,'CO')
-plot.plot_predicted(emi_CH4, emi_err_CH4, emi_CH4_ISPRA,'CH4')
+    print('plot predicted')
+    plot.plot_predicted(emi_CO , emi_err_CO , 'CO' , emi_ISPRA=emi_CO_ISPRA)
+    plot.plot_predicted(emi_CH4, emi_err_CH4, 'CH4', emi_ISPRA=emi_CH4_ISPRA)
+else:
+    print('plot ISPRA EDGAR')
+    plot.plot_ISPRA_EDGAR(emi_CO, emi_err_CO, 'CO')
+    plot.plot_ISPRA_EDGAR(emi_CH4, emi_err_CH4, 'CH4')    
 
+    print('plot predicted')
+    plot.plot_predicted(emi_CO , emi_err_CO , 'CO' )
+    plot.plot_predicted(emi_CH4, emi_err_CH4, 'CH4')
+    
 print('Plot 2D')
 plot.plot_2D_emis('CH4', 2015, False)
+plot.plot_2D_emis('CO', 2015, False)
 
 
 ###############################################################################
