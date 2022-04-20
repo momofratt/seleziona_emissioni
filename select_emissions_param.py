@@ -13,6 +13,8 @@ lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
 
 # seleziona province. NB: le province selezionate DEVONO essere adiacenti. e.g. [Ferrara, Bologna, Modena] è una buona selezione, [Ferrara, Bologna, Parma] invece NO
 
+# the variable description is reported in the Puy de Dome section
+
 # ############## EMILIA ROMAGNA ###############
 # region = 'ER' # suffix for ouput files
 # region_full = 'Emilia Romagna'
@@ -62,41 +64,41 @@ lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
 # ###############################################
 # # ############## Puy de dome ###############
 # altre province: (1, 'Turin'),(4, 'Cuneo')(2, 'Vercelli'),(96, 'Biella'),(5, 'Asti'),(25, 'Belluno'),(6, 'Alessandria'),
-region = 'PUY'
-region_full = "Rhone-Auvergne"
+region = 'PUY' # name for the datafiles
+region_full = "Rhone-Auvergne" # name for the plots
 #prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
 prov_numname=[(0,'Puy-de-Dôme'),(0,'Creuse'),(0,'Corrèze'),(0,'Rhône'),(0,'Loire')]
-lat_stat, lon_stat = 45.7719, 2.9658 
-stat_nm = 'Puy-de-Dôme'
+lat_stat, lon_stat = 45.7719, 2.9658 # latitude of the station. It is used to plot a triangle on that point
+stat_nm = 'Puy-de-Dôme' # name for the plots
 IPR = False
 ###############################################
 
-prov_num  = [prov[0] for prov in prov_numname] # province number according to ISPRA dataset
-provinces = [prov[1] for prov in prov_numname] # province name according to admin1 geoframe
-########################################
 profile_region = 17 # region profile number according to EDGAR dataset (see Crippa et al. 2020)
 
-start_year_ch4 = 1990
-end_year_ch4   = 2018
-start_year_co  = 1990
-end_year_co    = 2015
-end_year = 2021 #last year for emission prediction
+start_year_ch4 = 1990 # first year of the CH4 EDGAR netcdf database
+end_year_ch4   = 2018 # last year of the CH4 EDGAR netcdf database
+start_year_co  = 1990 # first year of the CO EDGAR netcdf database
+end_year_co    = 2015 # last year of the CO EDGAR netcdf database
+end_year       = 2021 #last year for emission prediction
 #################################################
 #################################################
 
 #################################################
 ################ FIXED PARAMETERS ###############
-########### DO NOT MODIFY THIS SECTION ##########
 d_lon = 0.1 # separation of grid points in deg
 d_lat = 0.1
 earth_rad = 6371 # [km]
 j_CMN, i_CMN = net.lat_to_index(lat_CMN, lon_CMN)
 lat_CMN, lon_CMN = net.index_to_lat(j_CMN, i_CMN) # obtain approximated lat_CMN, lon_CMN cendered on grid points 
 
+prov_num  = [prov[0] for prov in prov_numname] # province number according to ISPRA dataset
+provinces = [prov[1] for prov in prov_numname] # province name according to admin1 geoframe
+########################################
 
 ###############################################################################
 ###                         Select emission region                          ###
 ###############################################################################
+# defines other parameters and variables according to the provided user parameters
 
 states_geoframe = gpd.GeoDataFrame.from_file('admin1.geojson')        # read geojson file
 
