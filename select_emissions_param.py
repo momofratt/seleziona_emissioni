@@ -20,6 +20,7 @@ lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
 # region_full = 'Emilia Romagna'
 # prov_numname = [(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia'"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
 #lat_stat, lon_stat = lat_CMN, lon_CMN
+#country='Italy'
 #stat_nm = 'Mt. Cimone'
 # IPR=True
 ###############################################
@@ -29,6 +30,7 @@ lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
 # provinces = ['Grosseto', 'Livorno', 'Pisa', 'Massa-Carrara', 'Lucca', 'Pistoia', 'Prato', 'Firenze', 'Arezzo', 'Siena']
 #lat_stat, lon_stat = lat_CMN, lon_CMN
 #stat_nm = 'Mt. Cimone'
+#country='Italy'
 # IPR=True
 ###############################################
 # ############## PO' VALLEY ###############
@@ -37,8 +39,9 @@ lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
 #region_full = "Po' Valley"
 #prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
 #lat_stat, lon_stat = lat_CMN, lon_CMN
+#country='Italy'
 #stat_nm = 'Mt. Cimone'
-#IPR = True
+#IPR = False
 ###############################################
 ###############################################
 # ############## PO' VALLEY EST ###############
@@ -59,17 +62,19 @@ lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
 # prov_numname=[(0,'Bayern'),(0,'Baden-Württemberg')]
 # lat_stat, lon_stat = 47.8011, 11.0246 
 # stat_nm = 'Hohenpeissenberg'
+# country = 'Germany' # country name in the admin1 geojson file so avoi selecting regions with same name from different countries.
 # IPR = False
 # ###############################################
 # ###############################################
 # # ############## Puy de dome ###############
-# altre province: (1, 'Turin'),(4, 'Cuneo')(2, 'Vercelli'),(96, 'Biella'),(5, 'Asti'),(25, 'Belluno'),(6, 'Alessandria'),
+
 region = 'PUY' # name for the datafiles
 region_full = "Rhone-Auvergne" # name for the plots
 #prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
-prov_numname=[(0,'Puy-de-Dôme'),(0,'Creuse'),(0,'Corrèze'),(0,'Rhône'),(0,'Loire')]
+prov_numname=[(0,'Puy-de-Dôme'),(0,'Creuse'),(0,'Corrèze'),(0,'Cher'),(0,'Rhône'),(0,'Lot'),(0,'Lozère'),(0,'Aveyron'),(0,'Loire'),(0,'Haute-Loire'),(0,'Haute-Vienne'),(0,'Jura'),(0,'Saône-et-Loire'),(0,'Cantal'),(0,'Allier')]
 lat_stat, lon_stat = 45.7719, 2.9658 # latitude of the station. It is used to plot a triangle on that point
 stat_nm = 'Puy-de-Dôme' # name for the plots
+country = 'France' # country name in the admin1 geojson file so avoi selecting regions with same name from different countries.
 IPR = False
 ###############################################
 
@@ -105,7 +110,7 @@ states_geoframe = gpd.GeoDataFrame.from_file('admin1.geojson')        # read geo
 prov_geoframe = gpd.GeoDataFrame()  # select provinces
 
 for prov in provinces:
-    new_prov = states_geoframe[states_geoframe['name']==prov] # read line from the GeoDataFrame that correspond to the selected province
+    new_prov = states_geoframe[(states_geoframe['name']==prov) & (states_geoframe['country']==country)] # read line from the GeoDataFrame that correspond to the selected province
     if type(new_prov['geometry'].to_list()[0]) == shapely.geometry.multipolygon.MultiPolygon: # if prov is a multipolygon (e.g. islands) uses only the largest polygon 
         prov_poly = new_prov['geometry'].to_list()    
         max_prov_poly = max(prov_poly[0], key=lambda a: a.area)
@@ -113,6 +118,7 @@ for prov in provinces:
     
     # prov_geoframe = prov_geoframe.append(new_prov, ignore_index=True)
     prov_geoframe = pd.concat([prov_geoframe, new_prov],ignore_index=True)
+
 
 # union of provinces and evaluation of external boundaries
 geoms = prov_geoframe['geometry'].tolist()
