@@ -34,14 +34,28 @@ lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
 # IPR=True
 ###############################################
 # ############## PO' VALLEY ###############
-#altre province: (1, 'Turin'),(4, 'Cuneo')(2, 'Vercelli'),(96, 'Biella'),(5, 'Asti'),(25, 'Belluno'),(6, 'Alessandria'),
-#region = 'PO'
-#region_full = "Po' Valley"
-#prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
-#lat_stat, lon_stat = lat_CMN, lon_CMN
-#country='Italy'
-#stat_nm = 'Mt. Cimone'
-#IPR = False
+region = 'PO'
+region_full = "Po' Valley"
+prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+lat_stat, lon_stat = lat_CMN, lon_CMN
+country='Italy'
+stat_nm = 'Mt. Cimone'
+IPR = True
+###############################################
+# ############## PO' VALLEY extended ###############
+# region = 'PO-ext'
+# region_full = "Po' Valley"
+# prov_numname = [(97,'Lecco'),(14,'Sondrio'),(25, 'Belluno'),(22,'Trento'),
+#                 (21,'Bozen'),(25,'Belluno'),(93,'Pordenone'), (30,'Udine'),
+#                 (3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),
+#                 (18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),
+#                 (23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),
+#                 (33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),
+#                 (39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
+# lat_stat, lon_stat = lat_CMN, lon_CMN
+# country='Italy'
+# stat_nm = 'Mt. Cimone'
+# IPR = True
 ###############################################
 ###############################################
 # ############## PO' VALLEY EST ###############
@@ -68,14 +82,25 @@ lon_bolo, lat_bolo = 11.3435 , 44.4947  # Bologna
 # ###############################################
 # # ############## Puy de dome ###############
 
-region = 'PUY' # name for the datafiles
-region_full = "Rhone-Auvergne" # name for the plots
-#prov_numname = [(3, 'Novara'),(12, 'Varese'),(13, 'Como'),(15, 'Milano'),(16, 'Bergamo'),(17, 'Brescia'),(18, 'Pavia'),(19, 'Cremona'),(20, 'Mantova'),(97, 'Lecco'),(98, 'Lodi'), (103, 'Monza e Brianza'),(23, 'Verona'),(24, 'Vicenza'),(26, 'Treviso'),(27, 'Venezia'),(28, 'Padova'),(29, 'Rovigo'),(33, 'Piacenza'),(34, 'Parma'),(35, "Reggio Emilia"),(36, 'Modena'),(37, 'Bologna'),(38, 'Ferrara'),(39, 'Ravenna'),(40, "Forlì-Cesena"),(99, 'Rimini')]
-prov_numname=[(0,'Puy-de-Dôme'),(0,'Creuse'),(0,'Corrèze'),(0,'Cher'),(0,'Rhône'),(0,'Lot'),(0,'Lozère'),(0,'Aveyron'),(0,'Loire'),(0,'Haute-Loire'),(0,'Haute-Vienne'),(0,'Jura'),(0,'Saône-et-Loire'),(0,'Cantal'),(0,'Allier')]
-lat_stat, lon_stat = 45.7719, 2.9658 # latitude of the station. It is used to plot a triangle on that point
-stat_nm = 'Puy-de-Dôme' # name for the plots
-country = 'France' # country name in the admin1 geojson file so avoi selecting regions with same name from different countries.
-IPR = False
+#region = 'PUY' # name for the datafiles
+#region_full = "Rhone-Auvergne" # name for the plots
+#prov_numname=[(0,'Puy-de-Dôme'),(0,'Creuse'),(0,'Corrèze'),(0,'Cher'),(0,'Rhône'),(0,'Lot'),(0,'Lozère'),(0,'Aveyron'),(0,'Loire'),(0,'Haute-Loire'),(0,'Haute-Vienne'),(0,'Jura'),(0,'Saône-et-Loire'),(0,'Cantal'),(0,'Allier')]
+#lat_stat, lon_stat = 45.7719, 2.9658 # latitude of the station. It is used to plot a triangle on that point
+#stat_nm = 'Puy-de-Dôme' # name for the plots
+#country = 'France' # country name in the admin1 geojson file so avoi selecting regions with same name from different countries.
+#IPR = False
+
+# ###############################################
+# ###############################################
+# ## Observatoire perenne de l'environnement ###
+
+# region = 'OPE' # name for the datafiles
+# region_full = "Grand-Est" # name for the plots
+# prov_numname=[(0,'Meuse'),(0,'Bas-Rhin'),(0,'Vosges'),(0,'Marne'),(0,'Meurhe-et-Moselle'),(0,'Moselle'),(0,'Haute-Marne'),(0,'Ardennes'),(0,'Aube')]
+# lat_stat, lon_stat = 45.7719, 2.9658 # latitude of the station. It is used to plot a triangle on that point
+# stat_nm = 'Observatoire Perenne de l\'Environnement' # name for the plots
+# country = 'France' # country name in the admin1 geojson file so avoi selecting regions with same name from different countries.
+# IPR = False
 ###############################################
 
 profile_region = 17 # region profile number according to EDGAR dataset (see Crippa et al. 2020)
