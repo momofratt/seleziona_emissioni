@@ -18,11 +18,17 @@ import select_emissions_netcdf as net
 import sys
 
 
-def eval_max_emi_error(emi, emi_err):
+def eval_max_emi_error(emi, emi_err,spec):
+    
+    if spec.lower()=='ch4':
+        relative_err = 0.32
+    else:
+        relative_err = 0.30
+    
     new_error = np.zeros(len(emi_err))
     if len(emi) == len(emi_err):
         for i in range(len(emi_err)):
-            new_error[i] = max(emi_err[i], 0.1*emi[i])
+            new_error[i] = max(emi_err[i], relative_err*emi[i])
     else:
         print('error')
         sys.exit()
@@ -34,7 +40,7 @@ def plot_ISPRA_EDGAR(emi, emi_err, spec, anni=0, emi_ispra=0):
     elif spec == 'CH4':
         yrs = np.arange(par.start_year_ch4, par.end_year_ch4+1, 1)
 
-    emi_err = eval_max_emi_error(emi, emi_err) 
+    emi_err = eval_max_emi_error(emi, emi_err, spec) 
     fig, ax = plt.subplots(1,1, figsize = (9,5))
     fig.suptitle('ISPRA and EDGAR emissions for ' +par.region_full+' region')
     ax.errorbar(yrs,emi,emi_err,fmt='.', elinewidth=1, capsize=3, label = 'EDGAR '+spec)
@@ -63,8 +69,8 @@ def plot_EDGAR_monthly(emi, emi_err, emi_monthly, spec):
     predicted_emi_frame = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_yearly_emi.txt', sep =' ')    
     predicted_emi_frame = predicted_emi_frame[predicted_emi_frame['year']>end_year]
 
-    emi_err_12      = eval_max_emi_error(emi/12, emi_err/12)
-    emi_err_pred_12 = eval_max_emi_error((predicted_emi_frame['emi[t]']/12).to_numpy(),(predicted_emi_frame['emi_err[t]']/12).to_numpy())
+    emi_err_12      = eval_max_emi_error(emi/12, emi_err/12, spec)
+    emi_err_pred_12 = eval_max_emi_error((predicted_emi_frame['emi[t]']/12).to_numpy(),(predicted_emi_frame['emi_err[t]']/12).to_numpy(), spec)
 
     fig, ax = plt.subplots(1,1, figsize = (9,5))
     fig.suptitle('EDGAR monthly emissions for ' +par.region_full+' region')
@@ -100,7 +106,7 @@ def plot_predicted(emi, emi_err, spec, emi_ISPRA=0,):
         yrs = np.arange(par.start_year_ch4, par.end_year_ch4+1, 1)
         start_year = par.start_year_ch4
         end_year = par.end_year_ch4
-    emi_err = eval_max_emi_error(emi, emi_err)
+    emi_err = eval_max_emi_error(emi, emi_err, spec)
     
     predicted_values = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_emi.txt', sep = ' ')
     predicted_emi_file = open(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_yearly_emi.txt', 'w')
@@ -108,11 +114,22 @@ def plot_predicted(emi, emi_err, spec, emi_ISPRA=0,):
     for i in range(len(emi)):
         predicted_emi_file.write(str(yrs[i]) +' '+ str(round(emi[i])) +' '+ str(round(emi_err[i])) +'\n')
 
+    predicted_emi_file_IPR = open(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_yearly_emi_ISPRA.txt', 'w')
+    predicted_emi_file_IPR.write('year emi[t] emi_err[t]\n')
+    
+    yrs_ISPRA = np.arange(1990,2020,5)
+
+    for i in range(len(emi_ISPRA)):
+        predicted_emi_file_IPR.write(str(yrs_ISPRA[i]) +' '+ str(round(emi_ISPRA[i])) +'\n')
+
     fig, ax = plt.subplots(1,1, figsize = (9,5))
+    plt.rcParams.update({'font.size':15, 'axes.labelsize' : 15, 'xtick.labelsize' : 15, 'ytick.labelsize':15})
+    plt.xticks(fontsize=18)
+    plt.yticks(fontsize=18)
+
     fig.suptitle('Past and predicted emissions for '+spec)
     ax.errorbar(yrs,emi,emi_err,fmt='.', elinewidth=1, capsize=3, label = 'EDGAR')
     if par.IPR: 
-        yrs_ISPRA = np.arange(1990,2020,5)
         ax.scatter(yrs_ISPRA, emi_ISPRA, c='C4', label = 'ISPRA')
     for year in range(end_year+1, par.end_year+1):
         sup =  max(np.array(predicted_values[str(year)]) - predicted_values[str(year)].mean())
@@ -124,7 +141,7 @@ def plot_predicted(emi, emi_err, spec, emi_ISPRA=0,):
         if par.IPR: #plot only if IPR=True
             predicted_values_ISPRA = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_ISPRA_'+spec+'_emi.txt', sep = ' ')
             ax.scatter(year, predicted_values_ISPRA[str(year)].mean(), c='C3')
-
+            
         predicted_emi_file.write(str(year) +' '+ str(round(predicted_values[str(year)].mean())) +' '+ str(round(max(sup,inf,last_error))) +'\n')
     ax.set_xlabel('years')
     if emi_ISPRA!=0:
@@ -135,8 +152,9 @@ def plot_predicted(emi, emi_err, spec, emi_ISPRA=0,):
     ax.set_ylabel(spec+' total emission [t]')
     ax.grid()
     ax.legend(loc='best')
-    fig.savefig(par.res_folder+'EDGAR_predicted_'+par.region+'_'+spec+'.pdf', format = 'pdf')
+    fig.savefig(par.res_folder+'EDGAR_predicted_'+par.region+'_'+spec+'.pdf', format = 'pdf', bbox_inches='tight')
     plt.close(fig)
+    plt.rcdefaults()
 
 def plot_2D_emis(spec, year,plot_included_bins): 
     # plot 2d emission and selected area for a given specie in a giver year
