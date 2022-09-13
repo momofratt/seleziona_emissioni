@@ -15,9 +15,8 @@ import numpy as np
 
 def select_specie(in_frame, specie):
     # seleziona dati per la specie selezionata
-    out_frame = pd.DataFrame()
-    #out_frame = out_frame.append(in_frame[in_frame['COD_POL']==specie])
-    out_frame = pd.concat([out_frame, in_frame[in_frame['COD_POL']==specie]], ignore_index=True)
+    #out_frame = pd.concat([out_frame, in_frame[in_frame['COD_POL']==specie]], ignore_index=True)
+    out_frame = in_frame[in_frame['COD_POL']==specie]
     return out_frame
 
 def select_regional_data(regioni, macro_settore):
@@ -38,44 +37,36 @@ def select_regional_data(regioni, macro_settore):
     return sel_data_frame
 
 
-def select_prov_data(prov_number, macro_settore):
+def select_prov_data(prov_number):
     # seleziona dati riferiti alle province di interesse
     sel_data_frame = pd.DataFrame()
+    frame = pd.read_csv( './data_ISPRA/DB_ON_LINE_CampiIncrociati.csv', sep = ' ', thousands=',')    # legge frame 
+
     for prov in prov_number:
-        if type(macro_settore)==int:
-            macro_settore = [macro_settore]
-        for sett in macro_settore:
-            if sett<10: # definisce il prefisso del file realativo al macrosettore
-                prefix = 'sect_0'
-            else:
-                prefix = 'sect_'
-            frame = pd.read_csv( './data_ISPRA/'+prefix+str(sett)+'.csv', sep = ' ')    # legge frame del macrosettore
-            frame = frame[frame['COD_PROV'] == prov]  # seleziona dati regionali per il macrosettore
-            #sel_data_frame = sel_data_frame.append(frame) # appende i dati del macrosettore al frame totale
-            sel_data_frame = pd.concat([sel_data_frame,frame], ignore_index=True)
+        prov_frame = frame[frame['COD_PROV'] == prov]  # seleziona dati regionali per il macrosettore
+        sel_data_frame = pd.concat([sel_data_frame,prov_frame], ignore_index=True)
+
     return sel_data_frame
 
 
 def select_ISPRA(prov_num):
-    # returns ISPRA total emissions for CO and CH4 in Emilia Romagna
+    # returns ISPRA total emissions for CO and CH4
     # i dati devono essere suddivisi in files diferenti. Ogni file contiene i dati relativi ad un macrosettore
     # I vari macrosettori sono riportati nei dati disaggregati ISPRA ( http://www.sinanet.isprambiente.it/it/sia-ispra/inventaria/disaggregazione-dellinventario-nazionale-2015/view )
 
-    macro_settore = [1,2,3,4,5,6,7,8,9,10,11]
-    anni = [1990, 1995, 2000, 2005, 2010, 2015]
+    anni = [1990, 1995, 2000, 2005, 2010, 2015, 2019]
 
-    regional_frame = select_prov_data(prov_num, macro_settore)
+    regional_frame = select_prov_data(prov_num)
 
-    regional_ch4_frame = select_specie(regional_frame, '004')
-    regional_co_frame = select_specie(regional_frame, '005')
-
+    regional_ch4_frame = regional_frame[regional_frame['COD_POL']=='004'] # select methane emissions
+    regional_co_frame  = regional_frame[regional_frame['COD_POL']=='005'] # select c monoxide emissions
     co_annuale  = []
     ch4_annuale = []
     for yr in anni:
-        co_annuale.append( regional_co_frame[str(yr)].sum())
-        ch4_annuale.append(regional_ch4_frame[str(yr)].sum())
+        co_annuale.append( regional_co_frame[ ' '+str(yr)+' '].sum())
+        ch4_annuale.append(regional_ch4_frame[' '+str(yr)+' '].sum())
 
-    return co_annuale, ch4_annuale, anni
+    return  co_annuale, ch4_annuale, anni
 
 def plot_regional_sources():
 
@@ -199,6 +190,6 @@ def plot_bar_sector(ax, data, columns, title):
     ax.legend()
     ax.grid()
 
-plot_regional_sources()
+#plot_regional_sources()
 
 

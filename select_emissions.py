@@ -54,7 +54,7 @@ fitev.eval_predicted_values(emi_CH4,emi_err_CH4, 'CH4')
 
 print('eval predicted ISPRA')
 if par.IPR:
-    fitev.fit_emis_ISPRA('CO', emi_CO_ISPRA,  1990, 2015, 2, True)
+    fitev.fit_emis_ISPRA('CO', emi_CO_ISPRA,  1990, 2020, 2, True)
     fitev.eval_predicted_values_ISPRA(emi_CO_ISPRA, par.region, 'CO')
     fitev.eval_predicted_values_ISPRA(emi_CH4_ISPRA, par.region, 'CH4')
 
@@ -71,6 +71,7 @@ if par.IPR:
     print('plot predicted')
     plot.plot_predicted(emi_CO , emi_err_CO , 'CO' , emi_ISPRA=emi_CO_ISPRA)
     plot.plot_predicted(emi_CH4, emi_err_CH4, 'CH4', emi_ISPRA=emi_CH4_ISPRA)
+    
 else:
     print('plot ISPRA EDGAR')
     plot.plot_ISPRA_EDGAR(emi_CO, emi_err_CO, 'CO')
@@ -82,7 +83,7 @@ else:
     
 print('Plot 2D')
 plot.plot_2D_emis('CH4', 2015, False)
-plot.plot_2D_emis('CO', 2015, False)
+plot.plot_2D_emis('CO' , 2015, False)
 
 
 ###############################################################################

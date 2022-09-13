@@ -108,8 +108,9 @@ profile_region = 17 # region profile number according to EDGAR dataset (see Crip
 start_year_ch4 = 1990 # first year of the CH4 EDGAR netcdf database
 end_year_ch4   = 2018 # last year of the CH4 EDGAR netcdf database
 start_year_co  = 1990 # first year of the CO EDGAR netcdf database
-end_year_co    = 2015 # last year of the CO EDGAR netcdf database
-end_year       = 2021 #last year for emission prediction
+end_year_co    = 2018 # last year of the CO EDGAR netcdf database
+end_year       = 2021 # last year for emission prediction
+end_year_IPR   = 2019 # last year of ISPRA data
 #################################################
 #################################################
 

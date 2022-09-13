@@ -35,8 +35,10 @@ def eval_emission(spec):
             file_path = './data_CH4/v6.0_CH4_'+str(year)+'_TOTALS.0.1x0.1/'
             file_name = 'v6.0_CH4_'+str(year)+'_TOTALS.0.1x0.1.nc'
         elif spec == 'CO':
-            file_path = './data_CO/v50_CO_'+str(year)+'.0.1x0.1/'
-            file_name = 'v50_CO_'+str(year)+'.0.1x0.1.nc'
+            #file_path = './data_CO/v50_CO_'+str(year)+'.0.1x0.1/'
+            #file_name = 'v50_CO_'+str(year)+'.0.1x0.1.nc'
+            file_path = './data_CO/EDGARv6.1_CO_'+str(year)+'_TOTALS.0.1x0.1/'
+            file_name = 'EDGARv6.1_CO_'+str(year)+'_TOTALS.0.1x0.1.nc'  
         else:
             print('undefined gas specie')
             sys.exit()
@@ -265,7 +267,7 @@ def eval_predicted_values_ISPRA(emi, region, spec):
 
     """
 
-    end_year = 2015        
+    end_year = 2020        
     predicted_emi_file = open(par.predicted_res_folder+'predicted_'+region+'_ISPRA_'+spec+'_emi.txt', 'w')
     predicted_emi_file.write('start_year fit_order r2')
     for year in range(end_year, par.end_year+1): # add one col for each predicted year
@@ -279,9 +281,9 @@ def eval_predicted_values_ISPRA(emi, region, spec):
             variation_2005 = abs( emi[int((end_year-start_year-10)/5)] - emi[int((end_year-start_year)/5)]) # variation of the last 5 years of measured data
             
             if (variation_2020 < variation_2005) and (poly(end_year-start_year+5) < poly(end_year-start_year-5)):            
-                predicted_emi_file.write(str(start_year)+' '+str(fit_order) + ' ' + str(round(r2,3))+ ' ')
+                predicted_emi_file.write(str(start_year)+' '+str(fit_order) + ' ' + str(round(r2,3)))
                 for year in range(end_year, par.end_year+1):
-                    predicted_emi_file.write(str(round(poly(year-start_year))) + ' ')
-                predicted_emi_file.write(str(round(poly(par.end_year-start_year)))+'\n')
+                    predicted_emi_file.write(' '+ str(round(poly(year-start_year))) )
+                predicted_emi_file.write('\n')
     predicted_emi_file.close()
    

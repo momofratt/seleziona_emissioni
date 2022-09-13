@@ -97,7 +97,7 @@ def plot_EDGAR_monthly(emi, emi_err, emi_monthly, spec):
     fig.savefig(par.res_folder+par.region+'_EDGAR_monthly_'+spec+'.pdf', format = 'pdf')
     plt.close(fig)
 
-def plot_predicted(emi, emi_err, spec, emi_ISPRA=0,):
+def plot_predicted(emi, emi_err, spec, emi_ISPRA=0):
     if spec == 'CO':
         yrs = np.arange(par.start_year_co, par.end_year_co+1, 1)
         start_year = par.start_year_co
@@ -106,6 +106,9 @@ def plot_predicted(emi, emi_err, spec, emi_ISPRA=0,):
         yrs = np.arange(par.start_year_ch4, par.end_year_ch4+1, 1)
         start_year = par.start_year_ch4
         end_year = par.end_year_ch4
+
+    end_year_IPR = par.end_year_IPR
+
     emi_err = eval_max_emi_error(emi, emi_err, spec)
     
     predicted_values = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_emi.txt', sep = ' ')
@@ -117,7 +120,7 @@ def plot_predicted(emi, emi_err, spec, emi_ISPRA=0,):
     predicted_emi_file_IPR = open(par.predicted_res_folder+'predicted_'+par.region+'_'+spec+'_yearly_emi_ISPRA.txt', 'w')
     predicted_emi_file_IPR.write('year emi[t] emi_err[t]\n')
     
-    yrs_ISPRA = np.arange(1990,2020,5)
+    yrs_ISPRA = np.append(np.arange(1990,2020,5), 2019)
 
     for i in range(len(emi_ISPRA)):
         predicted_emi_file_IPR.write(str(yrs_ISPRA[i]) +' '+ str(round(emi_ISPRA[i])) +'\n')
@@ -138,11 +141,15 @@ def plot_predicted(emi, emi_err, spec, emi_ISPRA=0,):
         for i in range(5): #evaluate last error as the mean error of the last 5 years
             last_error = last_error + emi_err[end_year-i-start_year]/5 
         ax.errorbar(year, predicted_values[str(year)].mean(), yerr=max(sup,inf,last_error), c='C1',fmt='.', elinewidth=1, capsize=3)
-        if par.IPR: #plot only if IPR=True
+        
+
+        predicted_emi_file.write(str(year) +' '+ str(round(predicted_values[str(year)].mean())) +' '+ str(round(max(sup,inf,last_error))) +'\n')
+  
+    if par.IPR: #plot only if IPR=True
+        for year in range(end_year_IPR+1, par.end_year+1):
             predicted_values_ISPRA = pd.read_csv(par.predicted_res_folder+'predicted_'+par.region+'_ISPRA_'+spec+'_emi.txt', sep = ' ')
             ax.scatter(year, predicted_values_ISPRA[str(year)].mean(), c='C3')
             
-        predicted_emi_file.write(str(year) +' '+ str(round(predicted_values[str(year)].mean())) +' '+ str(round(max(sup,inf,last_error))) +'\n')
     ax.set_xlabel('years')
     if emi_ISPRA!=0:
         ax.set_ylim(0,max(max(emi+emi_err),max(emi_ISPRA))*1.05)
